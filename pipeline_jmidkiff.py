@@ -103,6 +103,7 @@ def impute_missing(df):
     '''
     numeric_mask = df.dtypes.apply(is_numeric_dtype)
     na_mask = df.isna().any()
+    print(f'Contains NA Values:\n{na_mask}')
     col_mask = numeric_mask.combine(other=na_mask, func=min)
     
     medians = df.loc[:,col_mask].median().to_dict()
@@ -216,6 +217,7 @@ def learn(target, training, testing, models, grid):
         
         # Loop over parameters 
         for params in grid[model_key]: 
+            model_start = datetime.datetime.now()
             print("Training model:", model_key, "|", params)
             
             # Create model 
@@ -241,11 +243,13 @@ def learn(target, training, testing, models, grid):
                             recall, precision, classification_report]]), 
                         columns=["Model", "Parameters", "Accuracy", "Recall", 
                             "Precision", "Classification Report"])
-            results = results.append(result, ignore_index=True, )
+            results = results.append(result, ignore_index=True)
+            model_end = datetime.datetime.now()
+            print('    Model Run Time:', model_end - model_start)
             
     # End timer
     stop = datetime.datetime.now()
-    print("Time Elapsed:", stop - start)
+    print("Total Time Elapsed:", stop - start)
 
     return results
 
