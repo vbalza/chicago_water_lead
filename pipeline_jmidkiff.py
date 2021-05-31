@@ -110,7 +110,7 @@ def impute_missing(df):
     
     return df.fillna(value=medians).dropna(axis=1, how='all')
 
-def normalized_values(df, ignore=[]): 
+def normalized_values(df, ignore=[], quiet=False): 
     '''
     Normalizes numeric columns using sklearn.preprocessing.StandardScaler()
     Inputs: 
@@ -125,13 +125,13 @@ def normalized_values(df, ignore=[]):
 
     scaler = StandardScaler()
     scaler.fit(df_working.loc[:,numeric_mask])
-
-    print('Normalization Results:')
-    print(list(df_working.loc[:,numeric_mask].columns))
-    print('Column Means:')
-    print(scaler.mean_)
-    print('Column Variances:')
-    print(scaler.var_)
+    if not quiet: 
+        print('Normalization Results:')
+        print(list(df_working.loc[:,numeric_mask].columns))
+        print('Column Means:')
+        print(scaler.mean_)
+        print('Column Variances:')
+        print(scaler.var_)
 
     return scaler
 
@@ -163,7 +163,7 @@ def normalize(df, scaler, ignore=[], inplace=False):
 
     df_working.loc[:,numeric_mask] = (scaler.transform(
         df_working.loc[:,numeric_mask]))
-    return df
+    return df.loc[:,ignore].join(df_working)
 
 ##### Generate Features
 def get_dummies(df, df_original): 
